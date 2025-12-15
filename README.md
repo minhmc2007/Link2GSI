@@ -1,6 +1,3 @@
-## Released GSIs
-Telegram channel: https://t.me/OfficialOriginGSI
-
 ## How to use
 
 ### Download tools
