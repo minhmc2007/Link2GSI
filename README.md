@@ -2,7 +2,7 @@
 
 ### Download tools
 ```
-git clone https://github.com/defnotegor/OriginGSITool.git
+git clone https://github.com/SamuraiArtem/OriginGSITool.git
 cd OriginGSITool
 ```
 
