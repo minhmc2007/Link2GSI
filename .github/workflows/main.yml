@@ -25,14 +25,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive  # <--- FIX: Clones the submodules (Tools/Firmware_extractor)
-          fetch-depth: 0         # <--- FIX: Fetches full history so git commands work
+          fetch-depth: 0        # Needed for git history checks in script
+          submodules: false     # DISABLE submodules to prevent the crash
 
-      - name: Fix Git Config
+      - name: Fix Broken Submodule (Manual Clone)
         run: |
-          # Sometimes needed if the script checks git user identity
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
+          # Manually clone the missing tool since .gitmodules is broken
+          # Remove the empty directory if it exists
+          rm -rf Tools/Firmware_extractor
+          
+          # Clone the correct repository into the expected path
+          git clone https://github.com/erfanoabdi/Firmware_extractor.git Tools/Firmware_extractor
 
       - name: Install System Dependencies
         run: |
