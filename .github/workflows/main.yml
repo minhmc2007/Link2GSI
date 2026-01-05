@@ -1,0 +1,58 @@
+name: Link to GSI Generator
+
+on:
+  workflow_dispatch:
+    inputs:
+      firmware_link:
+        description: 'Stock Firmware Link (Direct Download/Wget)'
+        required: true
+      rom_type:
+        description: 'ROM Type'
+        required: true
+        type: choice
+        options:
+          - OneUI
+          - Pixel
+          - MIUIGeneric
+          - HyperOS
+          - HMD
+
+jobs:
+  Link2GSI:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack arj cabextract rename liblzma-dev python3-pip brotli lz4 protobuf-compiler git gawk
+
+      - name: Install Python Dependencies
+        run: |
+          pip3 install backports.lzma protobuf twrpdtgen extract-dtb pycryptodome
+
+      - name: Run LinkToGSI Script
+        run: |
+          # Ensure the script is executable
+          chmod +x LinkToGSI.sh
+          
+          # Run the script with the inputs provided
+          sudo bash LinkToGSI.sh "${{ inputs.firmware_link }}" "${{ inputs.rom_type }}"
+
+      - name: Upload GSI Artifacts
+        uses: actions/upload-artifact@v4
+        if: always() # Upload even if previous step fails (to check logs/partial outputs)
+        with:
+          name: GSI-Build-Output
+          
+          # Currently capturing common GSI file types and zip files in the root or output folders
+          path: |
+            *.img
+            *.zip
+            *.txt
+            output/*
+            !src/
+            !.git/
