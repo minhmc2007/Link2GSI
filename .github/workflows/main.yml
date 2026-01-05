@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: false # We handle this manually to prevent errors
+          submodules: false # We handle this manually
 
       - name: Fix Broken Submodule (Manual Clone)
         run: |
@@ -57,23 +57,15 @@ jobs:
         id: prep
         run: |
           LINK="${{ inputs.firmware_link }}"
-          
-          # Handle Google Redirect URLs
           if [[ "$LINK" == *"google.com/url"* ]]; then
-             echo "Detected Google Redirect URL. Cleaning..."
              LINK=$(echo "$LINK" | grep -oP 'q=\K[^&]*' | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read().strip()))")
           fi
-          
-          echo "Clean Link: $LINK"
           echo "url=$LINK" >> $GITHUB_OUTPUT
 
       - name: Download Firmware
         id: download
         run: |
-          echo "Downloading Firmware..."
-          # -q = Quiet, -O = Output filename
           wget -q -O firmware.zip "${{ steps.prep.outputs.url }}"
-          
           if [ -f firmware.zip ]; then
             echo "Download Successful."
             du -h firmware.zip
@@ -85,27 +77,31 @@ jobs:
       - name: Run LinkToGSI Script
         run: |
           chmod +x LinkToGSI.sh
-          
-          # Run the script using the downloaded local file
-          # We pass "$(pwd)/firmware.zip" as the first argument
           sudo bash LinkToGSI.sh "$(pwd)/firmware.zip" "${{ inputs.rom_type }}"
 
-      - name: Compress GSI
+      - name: Compress GSI (with Fallback)
         run: |
-          # Go into the Output folder (Capital 'O' matches your logs)
           cd Output || exit 1
           
-          echo "Compressing GSI to save space..."
-          # Compress the .img file using xz
-          # -9 = Max compression, -T0 = Use all cores, -v = verbose
-          xz -9 -T0 -v *.img
+          # 1. Take ownership from root (Fixes Permission Denied)
+          sudo chown -R $USER:$USER .
+          
+          echo "Attempting compression..."
+          
+          # 2. Compress with xz -4 (Safe for RAM)
+          # '|| true' ensures the workflow doesn't stop if compression fails
+          xz -4 -T0 -v *.img || true
+          
+          echo "Compression step done. Checking files..."
+          ls -lh
 
       - name: Upload GSI Artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: GSI-${{ inputs.rom_type }}-Build
+          # 3. Wildcard matches .img (raw) OR .img.xz (compressed)
           path: |
-            Output/*.img.xz
+            Output/*.img*
             Output/*.txt
             Output/*.log
