@@ -25,16 +25,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0        # Needed for git history checks in script
-          submodules: false     # DISABLE submodules to prevent the crash
+          fetch-depth: 0
+          submodules: false # Disable auto submodule to fix the broken link issue
 
       - name: Fix Broken Submodule (Manual Clone)
         run: |
-          # Manually clone the missing tool since .gitmodules is broken
-          # Remove the empty directory if it exists
           rm -rf Tools/Firmware_extractor
-          
-          # Clone the correct repository into the expected path
           git clone https://github.com/erfanoabdi/Firmware_extractor.git Tools/Firmware_extractor
 
       - name: Install System Dependencies
@@ -46,24 +42,43 @@ jobs:
         run: |
           pip3 install backports.lzma protobuf twrpdtgen extract-dtb pycryptodome
 
-      - name: Clean URL and Run LinkToGSI
+      - name: Prepare and Clean URL
+        id: prep
         run: |
-          # 1. Input Sanity Check
           LINK="${{ inputs.firmware_link }}"
-          TYPE="${{ inputs.rom_type }}"
           
-          # Attempt to extract real link if a Google redirect is pasted accidentally
+          # Handle Google Redirect URLs
           if [[ "$LINK" == *"google.com/url"* ]]; then
-             echo "Detected Google Redirect URL. Attempting to extract real link..."
+             echo "Detected Google Redirect URL. Cleaning..."
              LINK=$(echo "$LINK" | grep -oP 'q=\K[^&]*' | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read().strip()))")
-             echo "Cleaned Link: $LINK"
+          fi
+          
+          echo "Clean Link: $LINK"
+          echo "url=$LINK" >> $GITHUB_OUTPUT
+
+      - name: Download Firmware
+        id: download
+        run: |
+          echo "Downloading Firmware..."
+          # -q = Quiet (shuts up wget), -O = Output filename
+          wget -q -O firmware.zip "${{ steps.prep.outputs.url }}"
+          
+          # Check if download succeeded and print size
+          if [ -f firmware.zip ]; then
+            echo "Download Successful."
+            du -h firmware.zip
+          else
+            echo "Download Failed."
+            exit 1
           fi
 
-          # 2. Make executable
+      - name: Run LinkToGSI Script
+        run: |
           chmod +x LinkToGSI.sh
           
-          # 3. Run
-          sudo bash LinkToGSI.sh "$LINK" "$TYPE"
+          # Pass the absolute path of the downloaded file to the script
+          # This assumes LinkToGSI.sh accepts a local file path as the first argument
+          sudo bash LinkToGSI.sh "$(pwd)/firmware.zip" "${{ inputs.rom_type }}"
 
       - name: Upload GSI Artifacts
         uses: actions/upload-artifact@v4
@@ -77,3 +92,4 @@ jobs:
             output/*
             !src/
             !.git/
+            !firmware.zip
