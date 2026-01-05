@@ -24,6 +24,15 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive  # <--- FIX: Clones the submodules (Tools/Firmware_extractor)
+          fetch-depth: 0         # <--- FIX: Fetches full history so git commands work
+
+      - name: Fix Git Config
+        run: |
+          # Sometimes needed if the script checks git user identity
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
 
       - name: Install System Dependencies
         run: |
@@ -34,21 +43,30 @@ jobs:
         run: |
           pip3 install backports.lzma protobuf twrpdtgen extract-dtb pycryptodome
 
-      - name: Run LinkToGSI Script
+      - name: Clean URL and Run LinkToGSI
         run: |
-          # Ensure the script is executable
+          # 1. Input Sanity Check
+          LINK="${{ inputs.firmware_link }}"
+          TYPE="${{ inputs.rom_type }}"
+          
+          # Attempt to extract real link if a Google redirect is pasted accidentally
+          if [[ "$LINK" == *"google.com/url"* ]]; then
+             echo "Detected Google Redirect URL. Attempting to extract real link..."
+             LINK=$(echo "$LINK" | grep -oP 'q=\K[^&]*' | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read().strip()))")
+             echo "Cleaned Link: $LINK"
+          fi
+
+          # 2. Make executable
           chmod +x LinkToGSI.sh
           
-          # Run the script with the inputs provided
-          sudo bash LinkToGSI.sh "${{ inputs.firmware_link }}" "${{ inputs.rom_type }}"
+          # 3. Run
+          sudo bash LinkToGSI.sh "$LINK" "$TYPE"
 
       - name: Upload GSI Artifacts
         uses: actions/upload-artifact@v4
-        if: always() # Upload even if previous step fails (to check logs/partial outputs)
+        if: always()
         with:
-          name: GSI-Build-Output
-          
-          # Currently capturing common GSI file types and zip files in the root or output folders
+          name: GSI-Build-Output-${{ inputs.rom_type }}
           path: |
             *.img
             *.zip
