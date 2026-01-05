@@ -26,12 +26,23 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: false # Disable auto submodule to fix the broken link issue
+          submodules: false
 
       - name: Fix Broken Submodule (Manual Clone)
         run: |
           rm -rf Tools/Firmware_extractor
           git clone https://github.com/erfanoabdi/Firmware_extractor.git Tools/Firmware_extractor
+
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       - name: Install System Dependencies
         run: |
@@ -60,10 +71,8 @@ jobs:
         id: download
         run: |
           echo "Downloading Firmware..."
-          # -q = Quiet (shuts up wget), -O = Output filename
           wget -q -O firmware.zip "${{ steps.prep.outputs.url }}"
           
-          # Check if download succeeded and print size
           if [ -f firmware.zip ]; then
             echo "Download Successful."
             du -h firmware.zip
@@ -76,8 +85,7 @@ jobs:
         run: |
           chmod +x LinkToGSI.sh
           
-          # Pass the absolute path of the downloaded file to the script
-          # This assumes LinkToGSI.sh accepts a local file path as the first argument
+          # Run the script using the downloaded local file
           sudo bash LinkToGSI.sh "$(pwd)/firmware.zip" "${{ inputs.rom_type }}"
 
       - name: Upload GSI Artifacts
