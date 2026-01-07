@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 SCRIPT_DIR=$(dirname "$0")
 BASE_DIR="$1"
@@ -21,11 +21,20 @@ else
     exit 1
 fi
 
+# ==========================================
+# AGGRESSIVE DEBLOAT - ONEUI
+# ==========================================
+
+# --- Bulk Directory Removals ---
 rm -rf $BASE_DIR/system/preload/*
 rm -rf $BASE_DIR/system/hidden/*
 rm -rf $BASE_DIR/system/saiv/*
 rm -rf $BASE_DIR/system/tts/*
+rm -rf $BASE_DIR/system/container/*
+rm -rf $BASE_DIR/system/app/MCF*
+rm -rf $BASE_DIR/system/etc/mcRegistry/*
 
+# --- System App Removals ---
 rm -rf $BASE_DIR/system/app/SamsungTTS*
 rm -rf $BASE_DIR/system/app/SamsungWeather
 rm -rf $BASE_DIR/system/app/SamsungCalendar
@@ -71,12 +80,41 @@ rm -rf $BASE_DIR/system/app/WebManual
 rm -rf $BASE_DIR/system/app/WlanTest
 rm -rf $BASE_DIR/system/app/SamsungOne
 rm -rf $BASE_DIR/system/app/ClipboardEdge
+rm -rf $BASE_DIR/system/app/EasymodeContactsWidget*
+rm -rf $BASE_DIR/system/app/EmergencyLauncher*
+rm -rf $BASE_DIR/system/app/EmergencyModeService*
+rm -rf $BASE_DIR/system/app/EmergencyProvider*
+rm -rf $BASE_DIR/system/app/FlipboardBriefing
+rm -rf $BASE_DIR/system/app/GameOptimizer
+rm -rf $BASE_DIR/system/app/MSSkype*
+rm -rf $BASE_DIR/system/app/Notes*
+rm -rf $BASE_DIR/system/app/SamsungBilling
+rm -rf $BASE_DIR/system/app/SamsungCloud*
+rm -rf $BASE_DIR/system/app/SamsungConnect*
+rm -rf $BASE_DIR/system/app/SamsungContentsAgent
+rm -rf $BASE_DIR/system/app/SamsungDLP*
+rm -rf $BASE_DIR/system/app/SamsungHealth*
+rm -rf $BASE_DIR/system/app/SamsungIME*
+rm -rf $BASE_DIR/system/app/SamsungMagnifier*
+rm -rf $BASE_DIR/system/app/SamsungMusic*
+rm -rf $BASE_DIR/system/app/SamsungPay*
+rm -rf $BASE_DIR/system/app/SamsungSocial*
+rm -rf $BASE_DIR/system/app/SamsungThemes*
+rm -rf $BASE_DIR/system/app/SamsungVideo*
+rm -rf $BASE_DIR/system/app/SBrowser*
+rm -rf $BASE_DIR/system/app/SecurityLogAgent
+rm -rf $BASE_DIR/system/app/SmartSwitch*
+rm -rf $BASE_DIR/system/app/StoryService*
+rm -rf $BASE_DIR/system/app/ThemeStore*
+rm -rf $BASE_DIR/system/app/Upday*
+rm -rf $BASE_DIR/system/app/VirtualTour*
+rm -rf $BASE_DIR/system/app/Yahoo*
 
+# --- Priv-App Removals ---
 rm -rf $BASE_DIR/system/priv-app/Honeyboard
 rm -rf $BASE_DIR/system/priv-app/AppUpdateCenter
 rm -rf $BASE_DIR/system/priv-app/AREmoji*
 rm -rf $BASE_DIR/system/priv-app/AvatarEmojiSticker
-rm -rf $BASE_DIR/system/priv-app/AppUpdateCenter
 rm -rf $BASE_DIR/system/priv-app/GalaxyApps_OPEN
 rm -rf $BASE_DIR/system/priv-app/PhotoRemasterService
 rm -rf $BASE_DIR/system/priv-app/PhotoEditor_AIFull
@@ -88,7 +126,6 @@ rm -rf $BASE_DIR/system/priv-app/GameDriver*
 rm -rf $BASE_DIR/system/priv-app/GameHome
 rm -rf $BASE_DIR/system/priv-app/GameOptimizingService
 rm -rf $BASE_DIR/system/priv-app/GameTools_Dream
-rm -rf $BASE_DIR/system/priv-app/PhotoRemasterService
 rm -rf $BASE_DIR/system/priv-app/Routines
 rm -rf $BASE_DIR/system/priv-app/SamsungVideoPlayer
 rm -rf $BASE_DIR/system/priv-app/SendHelpMessage
@@ -127,19 +164,77 @@ rm -rf $BASE_DIR/system/priv-app/TaskEdgePanel*
 rm -rf $BASE_DIR/system/priv-app/Netflix*
 rm -rf $BASE_DIR/system/priv-app/OneDrive_Samsung*
 rm -rf $BASE_DIR/system/priv-app/YourPhone*
+rm -rf $BASE_DIR/system/priv-app/AssistantMenu*
+rm -rf $BASE_DIR/system/priv-app/AutomationTest*
+rm -rf $BASE_DIR/system/priv-app/BeamService*
+rm -rf $BASE_DIR/system/priv-app/CallLogBackup*
+rm -rf $BASE_DIR/system/priv-app/Crane*
+rm -rf $BASE_DIR/system/priv-app/Dex*
+rm -rf $BASE_DIR/system/priv-app/DesktopMode*
+rm -rf $BASE_DIR/system/priv-app/DigitalWellbeing*
+rm -rf $BASE_DIR/system/priv-app/Excel*
+rm -rf $BASE_DIR/system/priv-app/Finder*
+rm -rf $BASE_DIR/system/priv-app/GalaxyCare*
+rm -rf $BASE_DIR/system/priv-app/GearManager*
+rm -rf $BASE_DIR/system/priv-app/GoogleFeedback*
+rm -rf $BASE_DIR/system/priv-app/HealthService*
+rm -rf $BASE_DIR/system/priv-app/Knox*
+rm -rf $BASE_DIR/system/priv-app/LedCoverService*
+rm -rf $BASE_DIR/system/priv-app/LinkSharing*
+rm -rf $BASE_DIR/system/priv-app/LiveDrawing*
+rm -rf $BASE_DIR/system/priv-app/LiveStickers*
+rm -rf $BASE_DIR/system/priv-app/MateAgent*
+rm -rf $BASE_DIR/system/priv-app/OMCAgent*
+rm -rf $BASE_DIR/system/priv-app/OnlineHelp*
+rm -rf $BASE_DIR/system/priv-app/PowerPoint*
+rm -rf $BASE_DIR/system/priv-app/Rubin*
+rm -rf $BASE_DIR/system/priv-app/SamsungAccount*
+rm -rf $BASE_DIR/system/priv-app/SamsungBilling*
+rm -rf $BASE_DIR/system/priv-app/SamsungCloud*
+rm -rf $BASE_DIR/system/priv-app/SamsungMagnifier*
+rm -rf $BASE_DIR/system/priv-app/SamsungPass*
+rm -rf $BASE_DIR/system/priv-app/SamsungPay*
+rm -rf $BASE_DIR/system/priv-app/SamsungSocial*
+rm -rf $BASE_DIR/system/priv-app/SecureFolder*
+rm -rf $BASE_DIR/system/priv-app/SKMSAgent*
+rm -rf $BASE_DIR/system/priv-app/SmartManager*
+rm -rf $BASE_DIR/system/priv-app/SmartSwitch*
+rm -rf $BASE_DIR/system/priv-app/SPPPushClient*
+rm -rf $BASE_DIR/system/priv-app/Tag*
+rm -rf $BASE_DIR/system/priv-app/Vision*
+rm -rf $BASE_DIR/system/priv-app/VoiceWakeup*
+rm -rf $BASE_DIR/system/priv-app/VRSetupWizard*
+rm -rf $BASE_DIR/system/priv-app/Word*
 
+# --- Product / System Product Removals ---
 rm -rf $product/app/Chrome
 rm -rf $product/app/Gmail2
 rm -rf $product/app/Maps
 rm -rf $product/app/YouTube
 rm -rf $product/app/BardShell
+rm -rf $product/app/Drive
+rm -rf $product/app/Duo
+rm -rf $product/app/Photos
+rm -rf $product/app/Music2
+rm -rf $product/app/Videos
+rm -rf $product/app/Talkback
+rm -rf $product/app/WebViewGoogle
+# Use AOSP WebView or Bromite later if needed, but for size, kill Google's
 
 rm -rf $product/priv-app/AndroidAutoStub
 rm -rf $product/priv-app/Velvet
 rm -rf $product/priv-app/FamilyLinkParentalControls
 rm -rf $product/priv-app/SearchSelector
 rm -rf $product/priv-app/AiWallpaper
+rm -rf $product/priv-app/Turbo
+rm -rf $product/priv-app/SetupWizard
+# Removing Google SetupWizard usually safe on GSI if provisioning is skipped
 
+# --- Misc System Ext Removals (If applicable) ---
+rm -rf $system_ext/app/Flipboard*
+rm -rf $system_ext/priv-app/Bixby*
+
+# --- Permissions and Configs Cleanup ---
 rm -rf $BASE_DIR/system/etc/init/digitalkey_init_nfc_tss2.rc
 rm -rf $BASE_DIR/system/etc/init/samsung_pass_authenticator_service.rc
 rm -rf $BASE_DIR/system/etc/permissions/privapp-permissions-com.microsoft.skydrive.xml
@@ -170,8 +265,8 @@ rm -rf $BASE_DIR/system/etc/sysconfig/samsungauthframework.xml
 rm -rf $BASE_DIR/system/etc/sysconfig/samsungpassapp.xml
 rm -rf $BASE_DIR/system/lib64/librildump_jni.so
 
+# --- Samsung Security/Knox/Fabric Cleanup ---
 rm -rf $BASE_DIR/system/bin/sdp_cryptod
-
 rm -rf $BASE_DIR/system/bin/fabric_crypto
 rm -rf $BASE_DIR/system/etc/init/fabric_crypto.rc
 rm -rf $BASE_DIR/system/etc/permissions/FabricCryptoLib.xml
@@ -183,6 +278,7 @@ rm -rf $BASE_DIR/system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-cpp
 rm -rf $BASE_DIR/system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-ndk.so
 rm -rf $BASE_DIR/system/priv-app/KmxService
 
+# --- SSU Cleanup ---
 rm -rf $BASE_DIR/system/bin/ssud
 rm -rf $BASE_DIR/system/etc/init/ssu_dm1qxxx.rc
 rm -rf $BASE_DIR/system/etc/init/ssu.rc
@@ -191,6 +287,8 @@ rm -rf $BASE_DIR/system/etc/sysconfig/samsungsimunlock.xml
 rm -rf $BASE_DIR/system/lib64/android.security.securekeygeneration-ndk.so
 rm -rf $BASE_DIR/system/lib64/libssu_keystore2.so
 rm -rf $BASE_DIR/system/priv-app/SsuService
+
+# --- Esim / Euicc Cleanup ---
 rm -rf $BASE_DIR/system/etc/permissions/privapp-permissions-com.samsung.android.app.esimkeystring.xml
 rm -rf $BASE_DIR/system/etc/permissions/privapp-permissions-com.samsung.euicc.xml
 rm -rf $BASE_DIR/system/etc/sysconfig/preinstalled-packages-com.samsung.android.app.esimkeystring.xml
@@ -198,8 +296,10 @@ rm -rf $BASE_DIR/system/etc/sysconfig/preinstalled-packages-com.samsung.euicc.xm
 rm -rf $BASE_DIR/system/priv-app/EsimKeyString
 rm -rf $BASE_DIR/system/priv-app/EuiccService
 
-# Switch to OpenCamera
+# --- Camera Switch ---
+# Removing stock samsung camera to save huge space (libs + apk)
 rm -rf $BASE_DIR/system/priv-app/SamsungCamera
+rm -rf $BASE_DIR/system/lib64/libSamsungCamera*
 rsync -ra $SCRIPT_DIR/OpenCamera $BASE_DIR/system/priv-app/
 
 # Switch to AOSP init
