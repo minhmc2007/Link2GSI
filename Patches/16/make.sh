@@ -1,8 +1,9 @@
 #!/bin/bash
 
-BASE_DIR=$1
+BASE_DIR="$1"
 SCRIPT_DIR=$(dirname "$0")
 
+# Detect product path
 if [ -d "$BASE_DIR/product" ] && [ ! -L "$BASE_DIR/product" ]; then
     product="$BASE_DIR/product"
 elif [ -d "$BASE_DIR/system/product" ] && [ ! -L "$BASE_DIR/system/product" ]; then
@@ -12,7 +13,13 @@ else
     exit 1
 fi
 
-# PHH Patches
+# Apply PHH patches
+echo "Applying PHH patches..."
 rsync -ra "$SCRIPT_DIR/system/" "$BASE_DIR/system/"
+
+# Apply overlays
+echo "Applying overlays..."
 mkdir -p "$product/overlay"
 rsync -ra "$SCRIPT_DIR/overlay/" "$product/overlay/"
+
+echo "Done."
